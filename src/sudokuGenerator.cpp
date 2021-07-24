@@ -1,4 +1,4 @@
-#include "sudokuGenerator.h"
+#include "sudokuGenerator.hpp"
 
 #include <set>
 

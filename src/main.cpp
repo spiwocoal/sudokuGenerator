@@ -1,14 +1,14 @@
-#include "sudokuGenerator.h"
-#include "sudokuExporter.h"
+#include "sudokuGenerator.hpp"
+#include "sudokuExporter.hpp"
 
 #include <array>
 #include <string.h>
 
 enum difficulty
 {
-    EASY = 10,
-    MEDIUM = 20,
-    HARD = 30,
+    EASY = 45,
+    MEDIUM = 50,
+    HARD = 58,
     EXPERT = 64
 };
 
