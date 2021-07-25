@@ -1,5 +1,6 @@
 #include "sudokuGenerator.hpp"
 #include "sudokuExporter.hpp"
+#include "sudokuImporter.hpp"
 
 #include <array>
 #include <string.h>
@@ -17,6 +18,8 @@ enum difficulty
 
 int main(int argc, char* argv[])
 {
+    std::array<std::array<int, 9>, 9> sudoku {};
+
     if (argc > 2)
     {
         std::cerr << "Only one argument can be used." << std::endl;
@@ -53,12 +56,13 @@ int main(int argc, char* argv[])
         }
         else
         {
-            std::cout << "The non-numeric argument given does not match one of the defined difficulty levels." << std::endl;
-            return 1;
+            sudoku = Importer::readFromFile(std::string(argv[1]));
+            Generator::printSudoku(sudoku);
+
+            return 0;
         }
     }
 
-    std::array<std::array<int, 9>, 9> sudoku {};
     Generator::generateSudoku(sudoku, holes);
     Generator::printSudoku(sudoku);
 

@@ -8,7 +8,7 @@
 PROJ_NAME = sudokuGenerator
 
 # OBJS specifies which files to compile as part of the project
-OBJS = src/main.cpp src/sudokuGenerator.cpp src/sudokuExporter.cpp src/sudokuBoardFile.cpp
+OBJS = src/main.cpp src/sudokuGenerator.cpp src/sudokuExporter.cpp src/sudokuBoardFile.cpp src/sudokuImporter.cpp
 
 # CC Specifies which compiler we're using
 CC = g++

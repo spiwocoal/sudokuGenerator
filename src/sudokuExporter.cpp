@@ -2,9 +2,6 @@
 #include "sudokuBoardFile.hpp"
 
 #include <cmath>
-#include <cstdint>
-#include <cstdlib>
-#include <iostream>
 
 std::string Exporter::getTime() {
     auto now = std::chrono::system_clock::now();
@@ -50,6 +47,5 @@ bool Exporter::writeToFile(const std::array<std::array<int, 9>, 9> &sudokuBoard)
     exportFile << *file;
 
     free(file);
-
     return success;
 }
