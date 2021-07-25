@@ -188,8 +188,6 @@ void Generator::printSudoku(const std::array<std::array<int, 9>, 9> &sudoku)
         {
             std::cout << std::endl;
         }
-
-        std::cout << std::endl;
     }
 }
 

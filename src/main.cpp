@@ -3,6 +3,9 @@
 
 #include <array>
 #include <string.h>
+#include <string>
+
+bool isNumber(const std::string& str);
 
 enum difficulty
 {
@@ -11,8 +14,6 @@ enum difficulty
     HARD = 58,
     EXPERT = 64
 };
-
-bool isNumber(const std::string& str);
 
 int main(int argc, char* argv[])
 {

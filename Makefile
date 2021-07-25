@@ -27,4 +27,8 @@ OBJ_NAME = $(PROJ_NAME)
 all : $(OBJS)
 	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
 
+# This is the target that cleans build files
+clean :
+	-rm sudokuGenerator
+
 # end
