@@ -8,14 +8,16 @@
 PROJ_NAME = sudokuGenerator
 
 # OBJS specifies which files to compile as part of the project
-OBJS = src/main.cpp src/sudokuGenerator.cpp src/sudokuExporter.cpp
+OBJS = src/main.cpp src/sudokuGenerator.cpp src/sudokuExporter.cpp src/sudokuBoardFile.cpp
 
 # CC Specifies which compiler we're using
 CC = g++
 
 # COMPILER_FLAGS specifies the additional compilation options we're using
 # -Wall shows all warnings
-COMPILER_FLAGS = -Wall -Iinclude
+# -Iinclude sets ./include as an include path
+# -g compiles with debug symbols
+COMPILER_FLAGS = -Wall -Iinclude -g
 
 # LINKER_FLAGS specifies the libraries we're linking against
 LINKER_FLAGS =

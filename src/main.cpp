@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     Generator::generateSudoku(sudoku, holes);
     Generator::printSudoku(sudoku);
 
-    //Exporter::createFile();
+    Exporter::writeToFile(sudoku);
 
     return 0;
 }
