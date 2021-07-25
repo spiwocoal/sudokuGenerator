@@ -32,8 +32,10 @@
 *.app
 sudokuGenerator
 
-# Clang LSP configuration files
+# Clang LSP configuration & cache files
 compile_commands.json
+.cache
+.cache/*
 
 # Generated sudoku boards
 sudokuBoards
