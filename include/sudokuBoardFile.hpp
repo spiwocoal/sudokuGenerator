@@ -20,7 +20,7 @@ struct twoCellVal
 struct sbFile
 {                                    // Offset
     boardSize size;                  // 0x00
-    twoCellVal values [128];         // 0x10
+    twoCellVal values [];            // 0x10
 };
 
 std::ostream& operator<<(std::ostream& stream, sbFile& file);

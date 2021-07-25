@@ -31,6 +31,6 @@ all : $(OBJS)
 
 # This is the target that cleans build files
 clean :
-	-rm sudokuGenerator
+	-rm sudokuGenerator sudokuBoards/*.sb
 
 # end

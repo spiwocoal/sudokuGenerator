@@ -1,6 +1,9 @@
 #include "sudokuExporter.hpp"
 #include "sudokuBoardFile.hpp"
 
+#include <cmath>
+#include <cstdint>
+#include <cstdlib>
 #include <iostream>
 
 std::string Exporter::getTime() {
@@ -20,23 +23,33 @@ bool Exporter::writeToFile(const std::array<std::array<int, 9>, 9> &sudokuBoard)
 
     std::string fileName {getTime() + ".sb"};
     std::ofstream exportFile("sudokuBoards/" + fileName, std::ios::out | std::ios::binary);
-    if (!exportFile || exportFile.bad()) {
+    if (!exportFile || exportFile.bad())
+    {
         success = false;
     }
 
-    sbFile file;
-    file.size = {9, 9};
+    struct sbFile *file = reinterpret_cast<sbFile *>(malloc(sizeof(struct sbFile) + std::ceil((float)(9 * 9) / 2.0f) * sizeof(uint8_t)));
+    file->size = {9, 9};
 
-    // FIXME: Indexing for file.values is wrong
-    // TODO: j should be stepped by one, while still storing 2 cells per byte
+    size_t fileIndex {};
+
+    std::array<int, 81> flattenedArray {};
     for (size_t i {}; i < 9; ++i) {
-        for (size_t j {}; j < 8; j += 2) {
-            file.values[(9 * i) + j].val0 = sudokuBoard.at(i).at(j);
-            file.values[(9 * i) + j].val1 = sudokuBoard.at(i).at(j + 1);
+        for (size_t j {}; j < 9; ++j) {
+            flattenedArray.at((9 * i) + j) = sudokuBoard.at(i).at(j);
         }
     }
 
-    exportFile << file;
+    while (fileIndex < std::ceil((float)(9 * 9) / 2.0f)) {
+        file->values[fileIndex].val0 = flattenedArray.at(2 * fileIndex);
+        file->values[fileIndex].val1 = ((2 * fileIndex) + 1) >= flattenedArray.size() ? 0 : flattenedArray.at((2 * fileIndex) + 1);
+
+        ++fileIndex;
+    }
+
+    exportFile << *file;
+
+    free(file);
 
     return success;
 }

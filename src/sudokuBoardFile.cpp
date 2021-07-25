@@ -1,8 +1,12 @@
 #include "sudokuBoardFile.hpp"
+#include <cmath>
 
 std::ostream& operator<<(std::ostream& stream, sbFile& file)
 {
-    for (size_t i {}; i < 128; ++i) {
+    stream.write(reinterpret_cast<char *>(&file.size), sizeof(std::uint8_t));
+
+    for (size_t i {}; i < std::ceil((float)(file.size.cols * file.size.rows) / 2.0f); ++i)
+    {
         stream.write(reinterpret_cast<char *>(&file.values[i]), sizeof(std::uint8_t));
     }
 
@@ -11,7 +15,9 @@ std::ostream& operator<<(std::ostream& stream, sbFile& file)
 
 std::ofstream& operator<<(std::ofstream& stream, sbFile& file)
 {
-    for (size_t i {}; i < 128; ++i) {
+    stream.write(reinterpret_cast<char *>(&file.size), sizeof(std::uint8_t));
+
+    for (size_t i {}; i < std::ceil((float)(file.size.cols * file.size.rows) / 2.0f); ++i) {
         stream.write(reinterpret_cast<char *>(&file.values[i]), sizeof(std::uint8_t));
     }
 
@@ -20,7 +26,9 @@ std::ofstream& operator<<(std::ofstream& stream, sbFile& file)
 
 std::ifstream& operator>>(std::ifstream& stream, sbFile& file)
 {
-    for (size_t i {}; i < 128; ++i) {
+    stream.read(reinterpret_cast<char *>(&file.size), sizeof(std::uint8_t));
+
+    for (size_t i {}; i < std::ceil((float)(file.size.cols * file.size.rows) / 2.0f); ++i) {
         stream.read(reinterpret_cast<char *>(&file.values[i]), sizeof(std::uint8_t));
     }
 
