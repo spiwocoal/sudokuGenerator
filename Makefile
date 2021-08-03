@@ -1,36 +1,53 @@
 ##
 # Sudoku Generator
-#
-# @file
-# @version 0.1
+# Thanks to Chase Lambert (https://makefiletutorial.com/#makefile-cookbook)
+##
 
-# PROJ_NAME specifies the name of the project
-PROJ_NAME = sudokuGenerator
+TARGET_EXEC := openSudoku-server
 
-# OBJS specifies which files to compile as part of the project
-OBJS = src/main.cpp src/sudokuGenerator.cpp src/sudokuExporter.cpp src/sudokuBoardFile.cpp src/sudokuImporter.cpp
+BUILD_DIR := ./build
+SRC_DIRS := ./src ./include
 
-# CC Specifies which compiler we're using
-CC = g++
+# Find all the C and C++ files we want to compile
+SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c)
 
-# COMPILER_FLAGS specifies the additional compilation options we're using
-# -Wall shows all warnings
-# -Iinclude sets ./include as an include path
-# -g compiles with debug symbols
-COMPILER_FLAGS = -Wall -Iinclude -g
+# String substitution for every C/C++ file.
+# As an example, hello.cpp turns into ./build/hello.cpp.o
+OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
-# LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS =
+# String substitution (suffix version without %).
+# As an example, ./build/hello.cpp.o turns into ./build/hello.cpp.d
+DEPS := $(OBJS:.o=.d)
 
-# OBJ_NAME specifies the name of our executable
-OBJ_NAME = $(PROJ_NAME)
+# Every folder in ./src will need to be passed to GCC so that it can find header files
+INC_DIRS := $(shell find $(SRC_DIRS) -type d)
+# Add a prefix to INC_DIRS. So moduleA would become -ImoduleA. GCC understands this -I flag
+INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
-# This is the target that compiles our executable
-all : $(OBJS)
-	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+# The -MMD and -MP flags together generate Makefiles for us!
+# These files will have .d instead of .o as the ouput
+CPPFLAGS := $(INC_FLAGS) -MMD -MP
 
-# This is the target that cleans build files
-clean :
-	-rm sudokuGenerator sudokuBoards/*.sb
+# The final build step
+$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
-# end
+# Build step for C source
+$(BUILD_DIR)/%.c.o: %.c
+	mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+# Build step for C++ source
+$(BUILD_DIR)/%.cpp.o: %.cpp
+	mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+.PHONY: clean
+clean:
+	rm -r $(BUILD_DIR)
+
+# Include the .d makefiles. The - at the front suppresses the errors of missing
+# Makefiles. Initially, all the .d files will be missing, and we don't want those
+# errors to show up
+-include $(DEPS)
+
