@@ -1,6 +1,7 @@
 #include "sudokuGenerator.hpp"
 #include "sudokuExporter.hpp"
 #include "sudokuImporter.hpp"
+#include "sudokuBoard.hpp"
 
 #include <array>
 #include <string.h>
@@ -18,7 +19,7 @@ enum difficulty
 
 int main(int argc, char* argv[])
 {
-    std::array<std::array<int, 9>, 9> sudoku {};
+    sudokuBoard sudoku(9);
 
     if (argc > 2)
     {

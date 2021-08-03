@@ -1,25 +1,26 @@
 #pragma once
 
 #include <iostream>
-#include <array>
 #include <random>
 #include <cmath>
 
+#include "sudokuBoard.hpp"
+
 namespace Generator {
-    void generateSudoku(std::array<std::array<int, 9>, 9> &sudoku, int k);
+    void generateSudoku(sudokuBoard &sudoku, int k);
 
-    void fillDiagonalBoxes(std::array<std::array<int, 9>, 9> &sudoku);
+    void fillDiagonalBoxes(sudokuBoard &sudoku);
 
-    bool unUsedInBox(int n, int row, int col, std::array<std::array<int, 9>, 9> &sudoku);
-    bool unUsedInRow(int n, int row, std::array<std::array<int, 9>, 9> &sudoku);
-    bool unUsedInCol(int n, int col, std::array<std::array<int, 9>, 9> &sudoku);
+    const bool unUsedInBox(int n, int row, int col, sudokuBoard &sudoku);
+    const bool unUsedInRow(int n, int row, sudokuBoard &sudoku);
+    const bool unUsedInCol(int n, int col, sudokuBoard &sudoku);
+    const bool checkIfSafe(int n, int row, int col, sudokuBoard &sudoku);
 
-    void removeKDigits(std::array<std::array<int, 9>, 9> &sudoku, int k);
+    const bool findEmptyCell(int &row, int &col, sudokuBoard &sudoku);
 
-    bool checkIfSafe(int n, int row, int col, std::array<std::array<int, 9>, 9> &sudoku);
-    bool findEmptyCell(int &row, int &col, std::array<std::array<int, 9>, 9> &sudoku);
+    void removeKDigits(sudokuBoard &sudoku, int k);
 
-    bool solveSudoku(std::array<std::array<int, 9>, 9> &sudoku);
+    bool solveSudoku(sudokuBoard &sudoku);
 
-    void printSudoku(const std::array<std::array<int, 9>, 9> &sudoku);
+    const void printSudoku(sudokuBoard &sudoku);
 }

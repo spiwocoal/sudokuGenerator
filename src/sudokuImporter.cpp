@@ -4,7 +4,7 @@
 #include <cmath>
 #include <fstream>
 
-std::array<std::array<int, 9>, 9> Importer::readFromFile(const std::string& path)
+sudokuBoard Importer::readFromFile(const std::string& path)
 {
     std::array<int, 81> flattenedBoard;
     std::ifstream inputFile(path);
@@ -18,13 +18,13 @@ std::array<std::array<int, 9>, 9> Importer::readFromFile(const std::string& path
         if ((2 * i) + 1 < 81) flattenedBoard.at((2 * i) + 1) = file->values[i].val1;
     }
 
-    std::array<std::array<int, 9>, 9> board {};
+    sudokuBoard board(9);
 
     for (size_t i {}; i < 9; ++i)
     {
         for (size_t j {}; j < 9; ++j)
         {
-            board.at(i).at(j) = flattenedBoard.at((9 * i) + j);
+            board.at(i, j) = flattenedBoard.at((9 * i) + j);
         }
     }
 

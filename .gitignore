@@ -30,7 +30,6 @@
 *.exe
 *.out
 *.app
-sudokuGenerator
 
 # Clang LSP configuration & cache files
 compile_commands.json
@@ -41,3 +40,7 @@ compile_commands.json
 sudokuBoards
 sudokuBoards/*
 *.sb
+
+# Build directory
+build
+build/*

@@ -1,8 +1,9 @@
 #include "sudokuGenerator.hpp"
+#include "sudokuBoard.hpp"
 
 #include <set>
 
-void Generator::generateSudoku(std::array<std::array<int, 9>, 9> &sudoku, int k)
+void Generator::generateSudoku(sudokuBoard &sudoku, int k)
 {
     // First, we fill the boxes in a diagonal with random valid numbers.
     fillDiagonalBoxes(sudoku);
@@ -11,7 +12,7 @@ void Generator::generateSudoku(std::array<std::array<int, 9>, 9> &sudoku, int k)
 }
 
 
-void Generator::fillDiagonalBoxes(std::array<std::array<int, 9>, 9> &sudoku)
+void Generator::fillDiagonalBoxes(sudokuBoard &sudoku)
 {
     // Random generator that will give an integer in the range [1,9].
     std::random_device rd;
@@ -38,7 +39,7 @@ void Generator::fillDiagonalBoxes(std::array<std::array<int, 9>, 9> &sudoku)
                   temp = dis(gen);
                 }
 
-                sudoku.at(j + (3 * i)).at(k + (3 * i)) = temp;
+                sudoku.at(j + (3 * i), k + (3 * i)) = temp;
                 numbersInBox.insert(temp);
             }
         }
@@ -46,7 +47,7 @@ void Generator::fillDiagonalBoxes(std::array<std::array<int, 9>, 9> &sudoku)
 }
 
 
-bool Generator::unUsedInBox(int n, int row, int col, std::array<std::array<int, 9>, 9> &sudoku)
+const bool Generator::unUsedInBox(int n, int row, int col, sudokuBoard &sudoku)
 {
     int vertBoxIndex = col / 3;
     int horiBoxIndex = row / 3;
@@ -55,7 +56,7 @@ bool Generator::unUsedInBox(int n, int row, int col, std::array<std::array<int, 
     {
         for (size_t j {}; j < 3; ++j)
         {
-            if (sudoku.at(i + (3 * horiBoxIndex)).at(j + (3 * vertBoxIndex)) == n)
+            if (sudoku.at(i + (3 * horiBoxIndex), j + (3 * vertBoxIndex)) == n)
             {
                 return false;
             }
@@ -64,11 +65,11 @@ bool Generator::unUsedInBox(int n, int row, int col, std::array<std::array<int, 
     return true;
 }
 
-bool Generator::unUsedInRow(int n, int row, std::array<std::array<int, 9>, 9> &sudoku)
+const bool Generator::unUsedInRow(int n, int row, sudokuBoard &sudoku)
 {
     for (size_t i {}; i < 9; ++i)
     {
-        if (sudoku.at(row).at(i) == n)
+        if (sudoku.at(row, i) == n)
         {
             return false;
         }
@@ -76,11 +77,11 @@ bool Generator::unUsedInRow(int n, int row, std::array<std::array<int, 9>, 9> &s
     return true;
 }
 
-bool Generator::unUsedInCol(int n, int col, std::array<std::array<int, 9>, 9> &sudoku)
+const bool Generator::unUsedInCol(int n, int col, sudokuBoard &sudoku)
 {
     for (size_t i {}; i < 9; ++i)
     {
-        if (sudoku.at(i).at(col) == n)
+        if (sudoku.at(i, col) == n)
         {
             return false;
         }
@@ -88,8 +89,32 @@ bool Generator::unUsedInCol(int n, int col, std::array<std::array<int, 9>, 9> &s
     return true;
 }
 
+const bool Generator::checkIfSafe(int n, int row, int col, sudokuBoard &sudoku)
+{
+    return (unUsedInBox(n, row, col, sudoku) &&
+            unUsedInCol(n, col, sudoku) &&
+            unUsedInRow(n, row, sudoku));
+}
 
-void Generator::removeKDigits(std::array<std::array<int, 9>, 9> &sudoku, int k)
+
+const bool Generator::findEmptyCell(int &row, int &col, sudokuBoard &sudoku)
+{
+    for (row = 0; row < 9; ++row)
+    {
+        for (col = 0; col < 9; ++col)
+        {
+            if (sudoku.at(row, col) == 0)
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+
+void Generator::removeKDigits(sudokuBoard &sudoku, int k)
 {
     if (k > 64)
     {
@@ -109,38 +134,14 @@ void Generator::removeKDigits(std::array<std::array<int, 9>, 9> &sudoku, int k)
         {
             x = dis(gen);
             y = dis(gen);
-        } while (sudoku.at(x).at(y) == 0);
+        } while (sudoku.at(x, y) == 0);
 
-        sudoku.at(x).at(y) = 0;
+        sudoku.at(x, y) = 0;
     }
 }
 
 
-bool Generator::checkIfSafe(int n, int row, int col, std::array<std::array<int, 9>, 9> &sudoku)
-{
-    return (unUsedInBox(n, row, col, sudoku) &&
-            unUsedInCol(n, col, sudoku) &&
-            unUsedInRow(n, row, sudoku));
-}
-
-bool Generator::findEmptyCell(int &row, int &col, std::array<std::array<int, 9>, 9> &sudoku)
-{
-    for (row = 0; row < 9; ++row)
-    {
-        for (col = 0; col < 9; ++col)
-        {
-            if (sudoku.at(row).at(col) == 0)
-            {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-
-bool Generator::solveSudoku(std::array<std::array<int, 9>, 9> &sudoku)
+bool Generator::solveSudoku(sudokuBoard &sudoku)
 {
     int row {}, col {};
 
@@ -153,14 +154,14 @@ bool Generator::solveSudoku(std::array<std::array<int, 9>, 9> &sudoku)
     {
         if (checkIfSafe(i, row, col, sudoku))
         {
-            sudoku.at(row).at(col) = i;
+            sudoku.at(row, col) = i;
 
             if (solveSudoku(sudoku))
             {
                 return true;
             }
 
-            sudoku.at(row).at(col) = 0;
+            sudoku.at(row, col) = 0;
         }
     }
 
@@ -168,7 +169,7 @@ bool Generator::solveSudoku(std::array<std::array<int, 9>, 9> &sudoku)
 }
 
 
-void Generator::printSudoku(const std::array<std::array<int, 9>, 9> &sudoku)
+const void Generator::printSudoku(sudokuBoard &sudoku)
 {
     // Row index
     for (size_t i {}; i < 9; ++i)
@@ -176,7 +177,7 @@ void Generator::printSudoku(const std::array<std::array<int, 9>, 9> &sudoku)
         // Column index
         for (size_t j {}; j < 9; ++j)
         {
-            std::cout << sudoku.at(i).at(j) << " ";
+            std::cout << (int)sudoku.at(i, j) << " ";
 
             if ((j + 1) % 3 == 0)
             {
@@ -191,6 +192,10 @@ void Generator::printSudoku(const std::array<std::array<int, 9>, 9> &sudoku)
         std::cout << std::endl;
     }
 }
+
+// =============================================================================
+// =====================================================================================================
+// ===========================================================
 
 /*
 void Generator::fillRemaining(std::array<std::array<int, 9>, 9> &sudoku)
