@@ -168,31 +168,6 @@ bool Generator::solveSudoku(sudokuBoard &sudoku)
     return false;
 }
 
-
-const void Generator::printSudoku(sudokuBoard &sudoku)
-{
-    // Row index
-    for (size_t i {}; i < 9; ++i)
-    {
-        // Column index
-        for (size_t j {}; j < 9; ++j)
-        {
-            std::cout << (int)sudoku.at(i, j) << " ";
-
-            if ((j + 1) % 3 == 0)
-            {
-                std::cout << " ";
-            }
-        }
-
-        if ((i + 1) % 3 == 0)
-        {
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
-    }
-}
-
 // =============================================================================
 // =====================================================================================================
 // ===========================================================

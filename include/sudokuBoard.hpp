@@ -3,6 +3,7 @@
 #include "sudokuBoardFile.hpp"
 
 #include <cstddef>
+#include <sstream>
 #include <vector>
 #include <cstdint>
 
@@ -11,10 +12,13 @@ class sudokuBoard {
 
     public:
         sudokuBoard(uint8_t s);
+        sudokuBoard(const sbFile &file);
         virtual ~sudokuBoard();
 
         uint8_t& at(size_t r, size_t c);
         const uint8_t& at(size_t r, size_t c) const;
+
+        std::string serialize() const;
 
         sbFile* to_sbFile() const;
 

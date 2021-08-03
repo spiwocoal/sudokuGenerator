@@ -21,6 +21,4 @@ namespace Generator {
     void removeKDigits(sudokuBoard &sudoku, int k);
 
     bool solveSudoku(sudokuBoard &sudoku);
-
-    const void printSudoku(sudokuBoard &sudoku);
 }

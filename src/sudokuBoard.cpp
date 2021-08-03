@@ -5,6 +5,22 @@ sudokuBoard::sudokuBoard(uint8_t s)
 {
 }
 
+sudokuBoard::sudokuBoard(const sbFile &file)
+    : board_(file.size, std::vector<uint8_t>(file.size))
+{
+    size_ = file.size;
+
+    uint8_t bytesUsed = (size_ % 2 == 0) ? (size_ / 2) : (size_ / 2 + 1);
+    std::vector<uint8_t> flattenedBoard {};
+
+    for (uint8_t i {}; i < bytesUsed; ++i) {
+        flattenedBoard.at(2 * i) = file.values[i].val0;
+        flattenedBoard.at(((2 * i) + 1 >= flattenedBoard.size()) ? 0 : flattenedBoard.at((2 * i) + 1)) = file.values[i].val1;
+    }
+
+    board_ = unflattenBoard(flattenedBoard);
+}
+
 sudokuBoard::~sudokuBoard()
 {
     for (auto &i : board_) {
@@ -21,6 +37,21 @@ uint8_t& sudokuBoard::at(size_t r, size_t c)
 const uint8_t& sudokuBoard::at(size_t r, size_t c) const
 {
     return board_.at(r).at(c);
+}
+
+std::string sudokuBoard::serialize() const
+{
+    std::stringstream serializedStream {};
+
+    for (size_t i {}; i < size_; ++i) {
+        for (size_t j {}; j < size_; ++j) {
+            serializedStream << (int)at(i, j) << (((j + 1) % 3 == 0) ? "  " : "");
+        }
+
+        serializedStream << (((i + 1) % 3 == 0) ? "\n\n" : "\n");
+    }
+
+    return serializedStream.str();
 }
 
 sbFile* sudokuBoard::to_sbFile() const
