@@ -58,14 +58,14 @@ int main(int argc, char* argv[])
         else
         {
             sudoku = Importer::readFromFile(std::string(argv[1]));
-            Generator::printSudoku(sudoku);
+            std::cout << sudoku.serialize();
 
             return 0;
         }
     }
 
     Generator::generateSudoku(sudoku, holes);
-    Generator::printSudoku(sudoku);
+    std::cout << sudoku.serialize();
 
     Exporter::writeToFile(sudoku);
 

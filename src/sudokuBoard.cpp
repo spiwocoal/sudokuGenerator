@@ -1,12 +1,14 @@
 #include "sudokuBoard.hpp"
 
 sudokuBoard::sudokuBoard(uint8_t s)
-    : board_(s, std::vector<uint8_t>(s))
+    : board_(s, std::vector<uint8_t>(s)),
+      size_(s)
 {
 }
 
 sudokuBoard::sudokuBoard(const sbFile &file)
-    : board_(file.size, std::vector<uint8_t>(file.size))
+    : board_(file.size, std::vector<uint8_t>(file.size)),
+      size_(file.size)
 {
     size_ = file.size;
 
