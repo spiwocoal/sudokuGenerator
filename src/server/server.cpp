@@ -2,7 +2,11 @@
 #include "sudokuGenerator.hpp"
 
 ServerConnection::ServerConnection(TCPSocket socket)
-    : socket_(std::move(socket))
+    : socket_(std::move(socket)),
+      properties_(nullptr),
+      board_(nullptr),
+      filePacket_(nullptr),
+      filePacketSize_(0)
 {
 }
 
@@ -15,7 +19,7 @@ void ServerConnection::doRead()
 {
     auto self(shared_from_this());
     socket_.async_read_some(boost::asio::buffer(properties_, sizeof(propertiesPacket)),
-                            [this, self](boost::system::error_code ec, std::size_t length)
+                            [this, self](boost::system::error_code ec, std::size_t /*length*/)
                             {
                                 if (!ec) {
                                     generateSudoku();
@@ -30,7 +34,7 @@ void ServerConnection::doWrite(void* data, size_t length)
 {
     auto self(shared_from_this());
     boost::asio::async_write(socket_, boost::asio::buffer(data, length),
-                             [this, self](boost::system::error_code ec, std::size_t length)
+                             [this, self](boost::system::error_code ec, std::size_t /*length*/)
                              {
                                  if (!ec) {
                                      doRead();
@@ -60,7 +64,7 @@ Server::Server(IOContext& io, short port)
 
 void Server::doAccept()
 {
-    acceptor_.async_accept(
+    acceptor_.async_accept(socket_,
         [this](boost::system::error_code ec)
         {
             if (!ec) {

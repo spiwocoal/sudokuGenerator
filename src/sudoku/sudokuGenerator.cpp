@@ -47,7 +47,7 @@ void Generator::fillDiagonalBoxes(sudokuBoard &sudoku)
 }
 
 
-const bool Generator::unUsedInBox(int n, int row, int col, sudokuBoard &sudoku)
+bool Generator::unUsedInBox(int n, int row, int col, const sudokuBoard &sudoku)
 {
     int vertBoxIndex = col / 3;
     int horiBoxIndex = row / 3;
@@ -65,7 +65,7 @@ const bool Generator::unUsedInBox(int n, int row, int col, sudokuBoard &sudoku)
     return true;
 }
 
-const bool Generator::unUsedInRow(int n, int row, sudokuBoard &sudoku)
+bool Generator::unUsedInRow(int n, int row, const sudokuBoard &sudoku)
 {
     for (size_t i {}; i < 9; ++i)
     {
@@ -77,7 +77,7 @@ const bool Generator::unUsedInRow(int n, int row, sudokuBoard &sudoku)
     return true;
 }
 
-const bool Generator::unUsedInCol(int n, int col, sudokuBoard &sudoku)
+bool Generator::unUsedInCol(int n, int col, const sudokuBoard &sudoku)
 {
     for (size_t i {}; i < 9; ++i)
     {
@@ -89,7 +89,7 @@ const bool Generator::unUsedInCol(int n, int col, sudokuBoard &sudoku)
     return true;
 }
 
-const bool Generator::checkIfSafe(int n, int row, int col, sudokuBoard &sudoku)
+bool Generator::checkIfSafe(int n, int row, int col, const sudokuBoard &sudoku)
 {
     return (unUsedInBox(n, row, col, sudoku) &&
             unUsedInCol(n, col, sudoku) &&
@@ -97,7 +97,7 @@ const bool Generator::checkIfSafe(int n, int row, int col, sudokuBoard &sudoku)
 }
 
 
-const bool Generator::findEmptyCell(int &row, int &col, sudokuBoard &sudoku)
+bool Generator::findEmptyCell(int &row, int &col, const sudokuBoard &sudoku)
 {
     for (row = 0; row < 9; ++row)
     {

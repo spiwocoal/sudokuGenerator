@@ -1,6 +1,7 @@
 #include <iostream>
-
 #include <boost/asio/io_context.hpp>
+
+#include "server.hpp"
 
 int main(int argc, char* argv[])
 {

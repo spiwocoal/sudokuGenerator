@@ -3,34 +3,58 @@
 # Thanks to Chase Lambert (https://makefiletutorial.com/#makefile-cookbook)
 ##
 
-TARGET_EXEC := openSudoku-server
-
 BUILD_DIR := ./build
-SRC_DIRS := ./src ./include
+INC_DIRS := ./include
+SRC_DIRS := ./src
+
+SERVER_TARGET_EXEC := openSudoku-server
+CLIENT_TARGET_EXEC := openSudoku-client
+
+TARGETS := $(BUILD_DIR)/$(SERVER_TARGET_EXEC) $(BUILD_DIR)/$(CLIENT_TARGET_EXEC)
 
 # Find all the C and C++ files we want to compile
-SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c)
+SRCS := $(shell find $(SRC_DIRS) \( -name "*.cpp" -or -name "*.c" \) ! \( -path '*/server/*' -or -path '*/client/*' \))
+
+SERVER_SRCS := $(shell find $(SRC_DIRS)/server -name *.cpp -or -name *.c)
+CLIENT_SRCS := $(shell find $(SRC_DIRS)/client -name *.cpp -or -name *.c)
 
 # String substitution for every C/C++ file.
 # As an example, hello.cpp turns into ./build/hello.cpp.o
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 
+SERVER_OBJS := $(SERVER_SRCS:%=$(BUILD_DIR)/%.o)
+CLIENT_OBJS := $(CLIENT_SRCS:%=$(BUILD_DIR)/%.o)
+
+ALL_OBJS := $(SUDOKU_OBJS) $(SERVER_OBJS) $(CLIENT_OBJS)
+
 # String substitution (suffix version without %).
 # As an example, ./build/hello.cpp.o turns into ./build/hello.cpp.d
-DEPS := $(OBJS:.o=.d)
+DEPS := $(ALL_OBJS:.o=.d)
 
 # Every folder in ./src will need to be passed to GCC so that it can find header files
-INC_DIRS := $(shell find $(SRC_DIRS) -type d)
+INC_DIRS += $(shell find $(SRC_DIRS) -type d ! \( -path '*/server' -or -path '*/client' \))
 # Add a prefix to INC_DIRS. So moduleA would become -ImoduleA. GCC understands this -I flag
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 # The -MMD and -MP flags together generate Makefiles for us!
 # These files will have .d instead of .o as the ouput
 CPPFLAGS := $(INC_FLAGS) -MMD -MP -g
+CPPFLAGS += -g
+CPPFLAGS += -Wall -Wextra
+CPPFLAGS += -Wpedantic -Warray-bounds -Weffc++
+CPPFLAGS += -Werror -Wno-error=effc++
+
+LDFLAGS := -pthread
+LDFLAGS += -lboost_thread -lboost_system
+
+all: $(TARGETS)
+
+$(BUILD_DIR)/$(SERVER_TARGET_EXEC): $(OBJS) $(SERVER_OBJS)
+$(BUILD_DIR)/$(CLIENT_TARGET_EXEC): $(OBJS) $(CLIENT_OBJS)
 
 # The final build step
-$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
+$(TARGETS):
+	$(CXX) $^ -o $@ $(LDFLAGS)
 
 # Build step for C source
 $(BUILD_DIR)/%.c.o: %.c
