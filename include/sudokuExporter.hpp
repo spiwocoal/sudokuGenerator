@@ -14,4 +14,6 @@ namespace Exporter
 
     bool writeToFile(const sudokuBoard &sudokuBoard, std::string fpath);
     bool writeToFile(const sudokuBoard &sudokuBoard);
+    bool writeToFile(const sbFile &file, std::string fpath);
+    bool writeToFile(const sbFile &file);;
 }

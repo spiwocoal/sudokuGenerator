@@ -4,11 +4,14 @@
 ##
 
 BUILD_DIR := ./build
+LIB_DIR := ./build/lib
 INC_DIRS := ./include
 SRC_DIRS := ./src
 
 SERVER_TARGET_EXEC := openSudoku-server
 CLIENT_TARGET_EXEC := openSudoku-client
+
+COMMON_LIB := libcommon.so
 
 TARGETS := $(BUILD_DIR)/$(SERVER_TARGET_EXEC) $(BUILD_DIR)/$(CLIENT_TARGET_EXEC)
 
@@ -43,18 +46,25 @@ CPPFLAGS += -g
 CPPFLAGS += -Wall -Wextra
 CPPFLAGS += -Wpedantic -Warray-bounds -Weffc++
 CPPFLAGS += -Werror -Wno-error=effc++
+CPPFLAGS += -fPIC
 
 LDFLAGS := -pthread
 LDFLAGS += -lboost_thread -lboost_system
+LDFLAGS += -L$(LIB_DIR) -lcommon
 
 all: $(TARGETS)
 
-$(BUILD_DIR)/$(SERVER_TARGET_EXEC): $(OBJS) $(SERVER_OBJS)
-$(BUILD_DIR)/$(CLIENT_TARGET_EXEC): $(OBJS) $(CLIENT_OBJS)
+$(BUILD_DIR)/$(SERVER_TARGET_EXEC): $(LIB_DIR)/$(COMMON_LIB) $(SERVER_OBJS)
+$(BUILD_DIR)/$(CLIENT_TARGET_EXEC): $(LIB_DIR)/$(COMMON_LIB) $(CLIENT_OBJS)
 
 # The final build step
 $(TARGETS):
 	$(CXX) $^ -o $@ $(LDFLAGS)
+
+# Link step for common library
+$(LIB_DIR)/$(COMMON_LIB): $(OBJS)
+	mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $^ -o $@ -shared
 
 # Build step for C source
 $(BUILD_DIR)/%.c.o: %.c

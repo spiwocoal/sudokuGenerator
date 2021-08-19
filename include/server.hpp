@@ -7,39 +7,39 @@
 #include "sudokuBoardFile.hpp"
 #include "ipc_common.hpp"
 
+namespace ba = boost::asio;
+using boost::asio::ip::tcp;
+using boost::system::error_code;
+using TCPSocket = tcp::socket;
+
 class ServerConnection
     : public std::enable_shared_from_this<ServerConnection>
 {
     public:
-        using TCPSocket = boost::asio::ip::tcp::socket;
-
         ServerConnection(TCPSocket socket);
 
         void start();
 
     private:
         void doRead();
-        void doWrite(void* data, size_t length);
 
         void generateSudoku();
+        void saveSudoku();
 
         TCPSocket socket_;
 
-        propertiesPacket* properties_;
-        sudokuBoard* board_;
-        sbFile* filePacket_;
-        short filePacketSize_;
+        propertiesPacket properties_;
+        sudokuBoard board_;
+        sbFile filePacket_;
 };
 
 class Server
 {
     public:
-        using IOContext = boost::asio::io_context;
-        using TCPSocket = boost::asio::ip::tcp::socket;
-        using TCPAcceptor = boost::asio::ip::tcp::acceptor;
+        using IOContext = ba::io_context;
+        using TCPAcceptor = tcp::acceptor;
 
-        Server(IOContext& io, short port);
-        // virtual ~Server();
+        Server(IOContext& io, uint16_t port);
 
     private:
         void doAccept();

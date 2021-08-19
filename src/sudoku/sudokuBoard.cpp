@@ -1,23 +1,35 @@
 #include "sudokuBoard.hpp"
+#include <iostream>
+
+sudokuBoard::sudokuBoard()
+    : board_(0),
+      size_(0)
+{
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
+}
 
 sudokuBoard::sudokuBoard(uint8_t s)
     : board_(s, std::vector<uint8_t>(s)),
       size_(s)
 {
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
 }
 
 sudokuBoard::sudokuBoard(const sbFile &file)
     : board_(file.size, std::vector<uint8_t>(file.size)),
       size_(file.size)
 {
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
     size_ = file.size;
 
-    uint8_t bytesUsed = (size_ % 2 == 0) ? (size_ / 2) : (size_ / 2 + 1);
-    std::vector<uint8_t> flattenedBoard {};
+    uint8_t bytesUsed = ((size_ * size_) % 2 == 0) ? ((size_ * size_) / 2) : ((size_ * size_) / 2 + 1);
+    std::vector<uint8_t> flattenedBoard(size_ * size_);
 
     for (size_t i {}; i < bytesUsed; ++i) {
         flattenedBoard.at(2 * i) = file.values[i].val0;
-        flattenedBoard.at(((2 * i) + 1 >= flattenedBoard.size()) ? 0 : flattenedBoard.at((2 * i) + 1)) = file.values[i].val1;
+
+        if ((2 * i) + 1 < flattenedBoard.size())
+            flattenedBoard.at((2 * i) + 1) = file.values[i].val1;
     }
 
     board_ = unflattenBoard(flattenedBoard);
@@ -25,6 +37,8 @@ sudokuBoard::sudokuBoard(const sbFile &file)
 
 sudokuBoard::~sudokuBoard()
 {
+    std::clog << __PRETTY_FUNCTION__ << std::endl;
+
     for (auto &i : board_) {
         i.clear();
     }
@@ -50,25 +64,30 @@ std::string sudokuBoard::serialize() const
             serializedStream << (int)at(i, j) << (((j + 1) % 3 == 0) ? "  " : "");
         }
 
-        serializedStream << (((i + 1) % 3 == 0) ? "\n\n" : "\n");
+        serializedStream << ( ( (i + 1) % 3 == 0 )
+                              ? "\n\n" : "\n" );
     }
 
     return serializedStream.str();
 }
 
-sbFile* sudokuBoard::to_sbFile() const
+sbFile sudokuBoard::to_sbFile() const
 {
-    uint8_t bytesNeeded = (size_ % 2 == 0) ? (size_ / 2) : (size_ / 2 + 1);
+    uint8_t entriesNeeded = std::ceil((float)(size_ * size_) / 2.0f);
 
-    sbFile* file = reinterpret_cast<sbFile *>(malloc(sizeof(struct sbFile) + (bytesNeeded - 1) * sizeof(uint8_t)));
-    file->size = size_;
-    file->values = reinterpret_cast<twoCellVal*>(malloc(sizeof(twoCellVal) * bytesNeeded));
+    sbFile file {};
+    file.size = size_;
+    file.values = std::vector<twoCellVal>(entriesNeeded);
 
     std::vector<uint8_t> flattenedBoard = flattenBoard();
 
-    for (size_t i {}; i < bytesNeeded; ++i) {
-        file->values[i].val0 = flattenedBoard.at(2 * i);
-        file->values[i].val1 = flattenedBoard.at(((2 * i) + 1 >= flattenedBoard.size()) ? 0 : flattenedBoard.at((2 * i) + 1));
+    for (size_t i {}; i < entriesNeeded; ++i) {
+        file.values.at(i).val0 = flattenedBoard.at(2 * i);
+
+        if ((2 * i) + 1 < flattenedBoard.size())
+            file.values.at(i).val1 = flattenedBoard.at((2 * i) + 1);
+        else
+            file.values.at(i).val1 = 0;
     }
 
     return file;
@@ -83,8 +102,10 @@ sudokuBoard& sudokuBoard::operator=(const sbFile &rhs)
     std::vector<uint8_t> flattenedBoard {};
 
     for (size_t i {}; i < bytesUsed; ++i) {
-        flattenedBoard.at(2 * i) = rhs.values[i].val0;
-        flattenedBoard.at(((2 * i) + 1 >= flattenedBoard.size()) ? 0 : flattenedBoard.at((2 * i) + 1)) = rhs.values[i].val1;
+        flattenedBoard.at(2 * i) = rhs.values.at(i).val0;
+
+        if ((2 * i) + 1 < flattenedBoard.size())
+            flattenedBoard.at((2 * i) + 1) = rhs.values[i].val1;
     }
 
     board_ = unflattenBoard(flattenedBoard);
