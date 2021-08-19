@@ -44,3 +44,6 @@ sudokuBoards/*
 # Build directory
 build
 build/*
+
+# Emacs related files
+*.el

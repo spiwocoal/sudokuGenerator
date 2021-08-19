@@ -23,15 +23,31 @@ bool Exporter::writeToFile(const sudokuBoard &sudokuBoard, std::string fpath) {
         success = false;
     }
 
-    sbFile *file = sudokuBoard.to_sbFile();
-    exportFile << *file;
+    sbFile file = sudokuBoard.to_sbFile();
+    exportFile << file;
 
-    free(file->values);
-    free(file);
     return success;
 }
 
 bool Exporter::writeToFile(const sudokuBoard &sudokuBoard)
 {
     return(writeToFile(sudokuBoard, "sudokuBoards/" + getTime() + ".sb"));
+}
+
+bool Exporter::writeToFile(const sbFile &file, std::string fpath) {
+    bool success = true;
+
+    std::ofstream exportFile(fpath, std::ios::out | std::ios::binary);
+    if (!exportFile || exportFile.bad()) {
+        success = false;
+    }
+
+    exportFile << file;
+
+    return success;
+}
+
+bool Exporter::writeToFile(const sbFile &file)
+{
+    return(writeToFile(file, "sudokuBoards/" + getTime() + ".sb"));
 }
