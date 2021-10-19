@@ -1,7 +1,16 @@
 #include "sudokuGenerator.hpp"
 #include "sudokuBoard.hpp"
 
-#include <set>
+#include <array>
+
+namespace Generator {
+    // Random generator that will be used later to
+    // generate numbers for the board and get random
+    // indices to delete from the board
+    std::random_device randomDev;
+    std::mt19937 randomGen(randomDev());
+}
+
 
 void Generator::generateSudoku(sudokuBoard &sudoku, int k)
 {
@@ -14,17 +23,15 @@ void Generator::generateSudoku(sudokuBoard &sudoku, int k)
 
 void Generator::fillDiagonalBoxes(sudokuBoard &sudoku)
 {
-    // Random generator that will give an integer in the range [1,9].
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1,9);
+    std::uniform_int_distribution<> numbersDis(1,9);
 
     // Diagonal box index
     for (size_t i {}; i < 3; ++i)
     {
         // We will store the numbers that are already present in the current box
-        // in a set so we don't repeat them.
-        std::set<int> numbersInBox;
+        // so that we do not repeat them
+        std::array<bool, 9> numbersInBox;
+        numbersInBox.fill(false);
 
         // Row sub-index in the box
         for (size_t j {}; j < 3; ++j)
@@ -32,15 +39,15 @@ void Generator::fillDiagonalBoxes(sudokuBoard &sudoku)
             // Column sub-index in the box
             for (size_t k {}; k < 3; ++k)
             {
-                int temp = dis(gen);
+                int temp = numbersDis(randomGen);
 
-                while (numbersInBox.find(temp) != numbersInBox.end())
+                while (numbersInBox.at(temp - 1))
                 {
-                  temp = dis(gen);
+                  temp = numbersDis(randomGen);
                 }
 
                 sudoku.at(j + (3 * i), k + (3 * i)) = temp;
-                numbersInBox.insert(temp);
+                numbersInBox.at(temp - 1) = true;
             }
         }
     }
@@ -121,9 +128,7 @@ void Generator::removeKDigits(sudokuBoard &sudoku, int k)
         k = 64;
     }
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0,8);
+    std::uniform_int_distribution<> indexDis(0,8);
 
     for (int i {}; i < k; ++i)
     {
@@ -132,8 +137,8 @@ void Generator::removeKDigits(sudokuBoard &sudoku, int k)
 
         do
         {
-            x = dis(gen);
-            y = dis(gen);
+            x = indexDis(randomGen);
+            y = indexDis(randomGen);
         } while (sudoku.at(x, y) == 0);
 
         sudoku.at(x, y) = 0;
