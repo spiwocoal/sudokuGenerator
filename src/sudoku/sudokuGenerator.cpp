@@ -2,6 +2,10 @@
 #include "sudokuBoard.hpp"
 
 #include <array>
+#include <iostream>
+#include <random>
+#include <cmath>
+
 
 namespace Generator {
     // Random generator that will be used later to
